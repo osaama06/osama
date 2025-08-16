@@ -7,7 +7,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'furssati.io',
         port: '',
-        pathname: '/**', // أكثر عمومية للسماح بكل المسارات
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -31,40 +31,20 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 30, // شهر واحد
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
-
-  // تحسينات Turbopack (تم نقله من experimental)
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
   },
 
   // تحسينات الأداء
   experimental: {
     optimizeCss: true,
-    optimizeServerReact: true,
-    serverMinification: true,
-    serverSourceMaps: false,
-    gzipSize: true,
   },
 
   // إعدادات الإنتاج
   poweredByHeader: false,
   generateEtags: true,
   compress: true,
-
-  // إعدادات التخزين المؤقت
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
-  },
 
   // Headers للأمان والأداء
   async headers() {
@@ -98,7 +78,6 @@ const nextConfig = {
           }
         ],
       },
-      // تحسين cache للملفات الثابتة
       {
         source: '/static/(.*)',
         headers: [
@@ -108,7 +87,6 @@ const nextConfig = {
           },
         ],
       },
-      // تحسين cache للصور - تم إصلاح regex
       {
         source: '/:path*\\.(ico|png|jpg|jpeg|gif|webp|svg)',
         headers: [
@@ -121,46 +99,13 @@ const nextConfig = {
     ];
   },
 
-  // إعدادات Webpack
+  // إعدادات Webpack (تم إزالة Preact aliases)
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // تحسينات bundle
-    if (!dev && !isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'react/jsx-runtime.js': 'preact/compat/jsx-runtime',
-        react: 'preact/compat',
-        'react-dom/test-utils': 'preact/test-utils',
-        'react-dom': 'preact/compat',
-      };
-    }
-
     // تحسين SVG
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack']
     });
-
-    // تحسين الـ bundle size
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      cacheGroups: {
-        default: false,
-        vendors: false,
-        vendor: {
-          chunks: 'all',
-          name: 'vendor',
-          test: /node_modules/,
-          priority: 20,
-        },
-        common: {
-          name: 'common',
-          minChunks: 2,
-          priority: 10,
-          reuseExistingChunk: true,
-          enforce: true,
-        },
-      },
-    };
 
     return config;
   },
@@ -168,11 +113,6 @@ const nextConfig = {
   // Static generation تحسينات
   trailingSlash: false,
   skipTrailingSlashRedirect: true,
-
-  // إعدادات البيئة
-  env: {
-    CUSTOM_KEY: 'my-value',
-  },
 
   // إعدادات الـ output
   output: 'standalone',
