@@ -1,0 +1,51 @@
+/* الحاوية العامة */
+.products-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* العنوان */
+.products-page h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #251f35;
+}
+
+/* شبكة المنتجات */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.5rem;
+}
+
+/* حاوية كل منتج */
+.product-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* عند عرض فارغ */
+.no-products {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+/* موبايل */
+@media (max-width: 480px) {
+  .products-page {
+    padding: 1rem;
+  }
+
+  .products-page h1 {
+    font-size: 1.4rem;
+  }
+
+  .products-grid {
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr); /* ✅ صفين عموديين في الجوال */
+  }
+}
+

@@ -1,0 +1,72 @@
+.slider-container {
+  padding: 30px 20px;
+  direction: rtl;
+  background-color: #f4f4f4;
+  text-align: center;
+  position: relative;
+}
+
+.slider-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.slider-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.slider {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  /* إخفاء السكروبار */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.slider::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.slider > * {
+  flex: 0 0 auto;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 10px;
+  transform: none;
+  background-color: #251f3500;
+  color: #9b9b9b;
+  border: none;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+.nav-btn.left {
+  right: 10px;
+}
+
+.nav-btn.right {
+  left: 10px;
+}
+.slider-link {
+  color: #000000;
+  text-decoration: none;
+}
+.slider-link:hover {
+  text-decoration: underline;
+}
+
+
+/* @media (max-width: 600px) {
+  .product-card {
+    min-width: 140px;
+  }
+} */

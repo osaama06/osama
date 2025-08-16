@@ -1,0 +1,114 @@
+
+
+ .orders {
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pagetitle {
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.categorey {
+  display: block;
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.productTitle {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #333;
+  margin: 15px 0;
+  font-weight: 600;
+}
+
+.ordercard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  padding: 15px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.ordercard:hover {
+  transform: translateY(-5px);
+}
+
+.qt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qt button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #f58f7c;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.qt button:hover {
+  background-color: #f2c4ce;
+}
+
+.remove-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #d00;
+  transition: color 0.3s;
+}
+
+.remove-btn:hover {
+  color: #a00;
+}
+
+.remvedProduct {
+  border: 1px dotted #666;
+  position: absolute;
+  width: 1.6rem;
+  text-align: center;
+  top: 10px;
+  left: 10px;
+}
+
+.remvedProduct button {
+  outline: none;
+  border: none;
+  background-color: white;
+  padding: 0 2px;
+}
+
+.remvedProduct span {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.productLink {
+  text-decoration: none;
+  color: inherit;
+}
