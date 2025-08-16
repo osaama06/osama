@@ -36,11 +36,6 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 
-  // تحسينات الأداء
-  experimental: {
-    optimizeCss: true,
-  },
-
   // إعدادات الإنتاج
   poweredByHeader: false,
   generateEtags: true,
