@@ -1,7 +1,7 @@
 .slider-container {
   padding: 30px 20px;
   direction: rtl;
-  background-color: #f4f4f4;
+  background-color: #ffff;
   text-align: center;
   position: relative;
 }
@@ -65,8 +65,8 @@
 }
 
 
-/* @media (max-width: 600px) {
+@media (max-width: 600px) {
   .product-card {
     min-width: 140px;
   }
-} */
+}

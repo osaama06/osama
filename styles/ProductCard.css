@@ -4,7 +4,7 @@
   width: 260px;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); */
   overflow: hidden;
   border: 2px solid transparent;
   transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
@@ -12,11 +12,11 @@
   direction: rtl;
 }
 
-.dynamic-product-card:hover {
+/* .dynamic-product-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
   border-color: rgba(147, 51, 234, 0.2);
-}
+} */
 
 /* شارة الخصم */
 .discount-badge {
@@ -443,7 +443,7 @@
 
 @media (max-width: 480px) {
   .dynamic-product-card {
-    width: 200px;
+    width: 187px;
   }
 
   .size-circle {
