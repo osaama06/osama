@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useCart } from "@/app/context/CartContext";
 import { useReviews } from "@/app/hooks/reviews";
 import Image from "next/image";
+import { FiShoppingCart } from 'react-icons/fi';
 import { Star, Heart, Share2, Truck, Shield, RotateCcw, Award, Plus, Minus, X, ChevronLeft, ChevronRight } from "lucide-react";
 import ReviewForm from "@/app/components/ReviewForm";
 import ProductSlider from "@/app/components/ProductSlider/page";
@@ -423,7 +424,7 @@ export default function ProductContent({ product, variations }) {
             </div>
 
             <button onClick={handleAddToCart} className="mobileAddToCartBtn">
-              🛒 أضف إلى السلة
+              <FiShoppingCart/> أضف إلى السلة
             </button>
           </div>
         </div>
@@ -503,7 +504,7 @@ export default function ProductContent({ product, variations }) {
 
           <div className="buyBoxActions">
             <button onClick={handleAddToCart} className="buyBoxAddToCart">
-              🛒 أضف إلى السلة
+                <FiShoppingCart/> أضف إلى السلة
             </button>
           </div>
         </div>
