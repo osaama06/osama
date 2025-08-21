@@ -61,10 +61,7 @@
   transition: all 0.5s ease;
 }
 
-.dynamic-product-card:hover .action-buttons {
-  opacity: 1;
-  transform: translateX(0);
-}
+
 
 .action-btn {
   width: 44px;
@@ -82,11 +79,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.action-btn:hover {
-  background: white;
-  transform: scale(1.1);
-  color: #7c3aed;
-}
+
 
 .action-btn.liked {
   background: #ef4444;
@@ -113,35 +106,11 @@
   filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.1));
 }
 
-.dynamic-product-card:hover .product-image {
-  transform: scale(1.08);
-}
 
-/* شارات المميزات */
-.feature-badges {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  opacity: 0;
-  transition: all 0.5s ease;
-}
 
-.dynamic-product-card:hover .feature-badges {
-  opacity: 1;
-}
 
-.feature-badge {
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-}
+
+
 
 /* محتوى البطاقة */
 .card-content {
@@ -162,9 +131,7 @@
   transition: color 0.3s ease;
 }
 
-.dynamic-product-card:hover .product-name {
-  color: #7c3aed;
-}
+
 
 /* التقييمات */
 .rating-section {
@@ -187,7 +154,7 @@
 }
 
 .star.filled {
-  color: #fbbf24;
+  color: #251f35;
   text-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
 }
 
@@ -252,11 +219,7 @@
   justify-content: center;
 }
 
-.size-circle:hover {
-  border-color: #7c3aed;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.2);
-}
+
 
 .size-circle.selected {
   background: linear-gradient(135deg, #7c3aed, #8b5cf6);
@@ -364,18 +327,14 @@
   left: 100%;
 }
 
-.add-to-cart-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(124, 58, 237, 0.5);
-}
 
 .add-to-cart-btn:active {
   transform: translateY(0);
 }
 
 .add-to-cart-btn.added {
-  background: linear-gradient(135deg, #10b981, #059669);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #584689, #251f35);
+  box-shadow: 0 8px 25px #4f4764;
   transform: scale(1.05);
 }
 
@@ -468,10 +427,7 @@
   outline: none;
 }
 
-.clickable-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
+
 
 .clickable-card:focus {
   outline: 2px solid #007bff;
@@ -487,9 +443,7 @@
   transform: scale(1.05);
 }
 
-.clickable-card:hover .glow-effect {
-  opacity: 0.8;
-}
+
 
 /* تأكد أن الأزرار والعناصر التفاعلية لا تتداخل مع النقر */
 .clickable-card .size-circle,

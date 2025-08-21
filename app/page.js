@@ -40,8 +40,9 @@ export default async function Home() {
   return (
     <main>
       {/* <ToggleMenu/> */}
-      <BannerSlider />
       <StoriesSlider />
+      <BannerSlider />
+
 
       {/* سلايدر لكل تصنيف */}
       {sliders.map(({ category, products }) =>

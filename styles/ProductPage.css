@@ -209,7 +209,7 @@
 }
 
 .imageDot.active {
-  background-color: #ff9500;
+  background-color: #251f35;
   transform: scale(1.2);
 }
 
@@ -257,7 +257,7 @@
 }
 
 .thumbnail.active {
-  border-color: #ff9500;
+  border-color: #251f35;
   border-width: 2px;
 }
 
@@ -318,7 +318,7 @@
 }
 
 .star.filled {
-  color: #ff9500;
+  color:#251f35;
   fill: currentColor;
 }
 
@@ -418,7 +418,7 @@
 }
 
 .sizeOption.selected {
-  border-color: #ff9500;
+  border-color: #251f35;
   box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5);
   background-color: #fff4e6;
 }
@@ -778,7 +778,7 @@
 .tabButton.active {
   background: white;
   color: #0f1111;
-  border-top: 2px solid #ff9500;
+  border-top: 2px solid #251f35;
   font-weight: 700;
 }
 
@@ -909,12 +909,12 @@
 .breakdownIcon {
   width: 14px;
   height: 14px;
-  color: #ff9500;
+  color: #251f35;
 }
 
 .breakdownFill {
   height: 8px;
-  background: #ff9500;
+  background: #251f35;
   border-radius: 4px;
 }
 
@@ -974,7 +974,7 @@
 }
 
 .verifiedBadge {
-  background: #ff9500;
+  background: #251f35;
   color: white;
   font-size: 10px;
   padding: 2px 6px;
@@ -992,7 +992,7 @@
   width: 24px;
   height: 24px;
   border: 2px solid #e7e7e7;
-  border-top: 2px solid #ff9500;
+  border-top: 2px solid #251f35;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
