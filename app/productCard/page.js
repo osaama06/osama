@@ -17,6 +17,154 @@ export default function DynamicProductCard({ product }) {
   const { addToCart } = useCart();
   const router = useRouter();
 
+  // فحص وجود المقاسات - مع حماية من null
+  const hasSizes = product?.attributes?.some(attr =>
+    attr.name.toLowerCase().includes("size") || attr.name === "المقاس"
+  ) || false;
+
+  const sizes = hasSizes
+    ? product.attributes.find(attr =>
+        attr.name.toLowerCase().includes("size") || attr.name === "المقاس"
+      )?.options || []
+    : [];
+
+  // حساب نسبة الخصم
+  const calculateDiscount = () => {
+    if (product?.regular_price && product?.sale_price) {
+      const regular = parseFloat(product.regular_price);
+      const sale = parseFloat(product.sale_price);
+      return Math.round(((regular - sale) / regular) * 100);
+    }
+    return 0;
+  };
+
+  const discount = calculateDiscount();
+  const finalPrice = product?.sale_price || product?.price || product?.regular_price;
+  const originalPrice = product?.regular_price;
+
+  // بيانات التقييم من API
+  const averageRating = product?.average_rating || 0;
+  const totalReviews = product?.rating_count || 0;
+
+  // فحص إذا كان الجهاز موبايل
+  const checkIsMobile = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
+    return false;
+  };
+
+  // جميع الـ Callbacks يجب أن تكون هنا قبل أي conditional returns
+  const handleModalClose = useCallback(() => {
+    console.log('Closing modal');
+    setShowMobileModal(false);
+    setShowDesktopModal(false);
+    setShowSizeError(false);
+    setSelectedSize(''); // إعادة تعيين المقاس المختار
+  }, []);
+
+  const handleSizeSelect = useCallback((size, e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    setSelectedSize(size);
+    setShowSizeError(false);
+  }, []);
+
+  const handleAddToCart = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    if (hasSizes && !selectedSize) {
+      setShowSizeError(true);
+      return;
+    }
+
+    setShowSizeError(false);
+
+    addToCart({
+      id: product?.id,
+      name: product?.name,
+      price: finalPrice,
+      image: product?.images?.[0]?.src,
+      size: selectedSize || null,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 3000);
+
+    // إغلاق النافذة المنبثقة إذا كانت مفتوحة
+    if (showMobileModal || showDesktopModal) {
+      handleModalClose();
+    }
+  }, [hasSizes, selectedSize, addToCart, product, finalPrice, showMobileModal, showDesktopModal, handleModalClose]);
+
+  const handleQuickAdd = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    // التحقق من حجم الشاشة في الوقت الفعلي
+    const isMobile = checkIsMobile();
+
+    console.log('handleQuickAdd called', { hasSizes, isMobile, mounted });
+
+    // فتح النافذة المناسبة إذا كانت هناك مقاسات
+    if (hasSizes && mounted) {
+      if (isMobile) {
+        console.log('Opening mobile modal');
+        setShowMobileModal(true);
+      } else {
+        console.log('Opening desktop modal');
+        setShowDesktopModal(true);
+      }
+      return;
+    }
+
+    // إضافة مباشرة للمنتجات بدون مقاسات
+    console.log('Adding directly to cart');
+    handleAddToCart(e);
+  }, [hasSizes, mounted, handleAddToCart]);
+
+  // إصلاح إغلاق النافذة بالنقر على الخلفية
+  const handleOverlayClick = useCallback((e) => {
+    // التأكد من أن النقر على الخلفية وليس على المحتوى
+    if (e.target === e.currentTarget) {
+      handleModalClose();
+    }
+  }, [handleModalClose]);
+
+  const handleLike = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    setLiked(!liked);
+    // يمكن إضافة API call هنا لحفظ المفضلة
+  }, [liked]);
+
+  const handleCardClick = useCallback(() => {
+    // منع الانتقال إذا كانت النافذة مفتوحة
+    if (showMobileModal || showDesktopModal) {
+      return;
+    }
+    // الانتقال إلى صفحة المنتج
+    router.push(`/products/${product?.slug}`);
+  }, [router, product?.slug, showMobileModal, showDesktopModal]);
+
+  const handleModalProductView = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    handleModalClose();
+    router.push(`/products/${product?.slug}`);
+  }, [router, product?.slug, handleModalClose]);
+
   // التأكد من تحميل المكون
   useEffect(() => {
     setMounted(true);
@@ -78,158 +226,12 @@ export default function DynamicProductCard({ product }) {
         document.removeEventListener('keydown', handleEscapeKey);
       };
     }
-  }, [showMobileModal, showDesktopModal]);
+  }, [showMobileModal, showDesktopModal, handleModalClose]);
 
+  // Early return بعد جميع الـ Hooks
   if (!product) {
     return <div className="no-product">لا توجد بيانات للمنتج</div>;
   }
-
-  // فحص وجود المقاسات
-  const hasSizes = product.attributes?.some(attr =>
-    attr.name.toLowerCase().includes("size") || attr.name === "المقاس"
-  );
-
-  const sizes = hasSizes
-    ? product.attributes.find(attr =>
-        attr.name.toLowerCase().includes("size") || attr.name === "المقاس"
-      )?.options || []
-    : [];
-
-  // حساب نسبة الخصم
-  const calculateDiscount = () => {
-    if (product.regular_price && product.sale_price) {
-      const regular = parseFloat(product.regular_price);
-      const sale = parseFloat(product.sale_price);
-      return Math.round(((regular - sale) / regular) * 100);
-    }
-    return 0;
-  };
-
-  const discount = calculateDiscount();
-  const finalPrice = product.sale_price || product.price || product.regular_price;
-  const originalPrice = product.regular_price;
-
-  // بيانات التقييم من API
-  const averageRating = product.average_rating || 0;
-  const totalReviews = product.rating_count || 0;
-
-  // فحص إذا كان الجهاز موبايل
-  const checkIsMobile = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth <= 768;
-    }
-    return false;
-  };
-
-  const handleSizeSelect = useCallback((size, e) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    setSelectedSize(size);
-    setShowSizeError(false);
-  }, []);
-
-  const handleAddToCart = useCallback((e) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-
-    if (hasSizes && !selectedSize) {
-      setShowSizeError(true);
-      return;
-    }
-
-    setShowSizeError(false);
-
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: finalPrice,
-      image: product.images?.[0]?.src,
-      size: selectedSize || null,
-    });
-
-    setAdded(true);
-    setTimeout(() => setAdded(false), 3000);
-
-    // إغلاق النافذة المنبثقة إذا كانت مفتوحة
-    if (showMobileModal || showDesktopModal) {
-      handleModalClose();
-    }
-  }, [hasSizes, selectedSize, addToCart, product, finalPrice, showMobileModal, showDesktopModal]);
-
-  const handleQuickAdd = useCallback((e) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-
-    // التحقق من حجم الشاشة في الوقت الفعلي
-    const isMobile = checkIsMobile();
-
-    console.log('handleQuickAdd called', { hasSizes, isMobile, mounted });
-
-    // فتح النافذة المناسبة إذا كانت هناك مقاسات
-    if (hasSizes && mounted) {
-      if (isMobile) {
-        console.log('Opening mobile modal');
-        setShowMobileModal(true);
-      } else {
-        console.log('Opening desktop modal');
-        setShowDesktopModal(true);
-      }
-      return;
-    }
-
-    // إضافة مباشرة للمنتجات بدون مقاسات
-    console.log('Adding directly to cart');
-    handleAddToCart(e);
-  }, [hasSizes, mounted, handleAddToCart]);
-
-  const handleModalClose = useCallback(() => {
-    console.log('Closing modal');
-    setShowMobileModal(false);
-    setShowDesktopModal(false);
-    setShowSizeError(false);
-    setSelectedSize(''); // إعادة تعيين المقاس المختار
-  }, []);
-
-  // إصلاح إغلاق النافذة بالنقر على الخلفية
-  const handleOverlayClick = useCallback((e) => {
-    // التأكد من أن النقر على الخلفية وليس على المحتوى
-    if (e.target === e.currentTarget) {
-      handleModalClose();
-    }
-  }, [handleModalClose]);
-
-  const handleLike = useCallback((e) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    setLiked(!liked);
-    // يمكن إضافة API call هنا لحفظ المفضلة
-  }, [liked]);
-
-  const handleCardClick = useCallback(() => {
-    // منع الانتقال إذا كانت النافذة مفتوحة
-    if (showMobileModal || showDesktopModal) {
-      return;
-    }
-    // الانتقال إلى صفحة المنتج
-    router.push(`/products/${product.slug}`);
-  }, [router, product.slug, showMobileModal, showDesktopModal]);
-
-  const handleModalProductView = useCallback((e) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    handleModalClose();
-    router.push(`/products/${product.slug}`);
-  }, [router, product.slug, handleModalClose]);
 
   // عدم عرض المكون قبل التحميل الكامل للتجنب SSR issues
   if (!mounted) {
