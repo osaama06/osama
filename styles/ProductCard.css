@@ -10,13 +10,8 @@
   transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
   text-align: right;
   direction: rtl;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-/* .dynamic-product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-  border-color: rgba(147, 51, 234, 0.2);
-} */
 
 /* شارة الخصم */
 .discount-badge {
@@ -385,16 +380,43 @@
   font-size: 16px;
 }
 
-/* النافذة الجانبية للديسكتوب */
+/* =================== إصلاح النوافذ المنبثقة =================== */
+
+/* إصلاح النافذة الجانبية للديسكتوب */
 .desktop-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   animation: fadeIn 0.3s ease;
+
+  /* الإصلاح الأساسي - منع التفاعل مع العناصر خلف النافذة */
+  pointer-events: auto;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* إضافة طبقة حماية إضافية */
+  isolation: isolate;
+}
+
+/* منع scroll في الخلفية عند فتح النافذة */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 .desktop-modal {
@@ -404,20 +426,33 @@
   width: 450px;
   height: 100vh;
   background: white;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.5);
   animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   overflow-y: auto;
   direction: rtl;
+  z-index: 100000;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+
+  /* منع النص من التحديد */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .desktop-modal-close {
   position: absolute;
   top: 20px;
   left: 20px;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border: none;
-  background: #f3f4f6;
+  background: rgba(243, 244, 246, 0.95);
+  backdrop-filter: blur(10px);
   color: #6b7280;
   border-radius: 50%;
   font-size: 24px;
@@ -427,19 +462,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 100001;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .desktop-modal-close:hover {
   background: #ef4444;
   color: white;
   transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+}
+
+.desktop-modal-close:active {
+  transform: scale(0.95);
 }
 
 .desktop-modal-content {
   padding: 80px 30px 30px;
   text-align: right;
   height: 100%;
+  min-height: 100vh;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+
+  /* تحسين التمرير */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .desktop-modal-image {
@@ -454,6 +508,11 @@
   object-fit: cover;
   border-radius: 20px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.desktop-modal-product-image:hover {
+  transform: scale(1.02);
 }
 
 .desktop-modal-info {
@@ -557,12 +616,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
 }
 
 .desktop-modal-size-circle:hover {
   border-color: #7c3aed;
   background: #f8fafc;
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+}
+
+.desktop-modal-size-circle:active {
+  transform: translateY(0) scale(0.95);
 }
 
 .desktop-modal-size-circle.selected {
@@ -604,12 +674,22 @@
   gap: 10px;
   transition: all 0.3s ease;
   box-shadow: 0 8px 24px rgba(37, 31, 53, 0.3);
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
 }
 
 .desktop-modal-add-to-cart-btn:hover:not(.disabled) {
   background: #342a4a;
   transform: translateY(-3px);
   box-shadow: 0 12px 32px rgba(37, 31, 53, 0.4);
+}
+
+.desktop-modal-add-to-cart-btn:active:not(.disabled) {
+  transform: translateY(-1px);
 }
 
 .desktop-modal-add-to-cart-btn.added {
@@ -639,6 +719,12 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
 }
 
 .desktop-modal-view-product:hover {
@@ -646,6 +732,11 @@
   color: #7c3aed;
   background: #f8fafc;
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.15);
+}
+
+.desktop-modal-view-product:active {
+  transform: translateY(0);
 }
 
 /* الأنيميشن للنافذة الجانبية */
@@ -663,7 +754,7 @@
 /* إخفاء النافذة الجانبية على الموبايل */
 @media (max-width: 768px) {
   .desktop-modal-overlay {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -683,19 +774,33 @@
   }
 }
 
-/* النافذة المنبثقة للموبايل */
+/* إصلاح النافذة المنبثقة للموبايل */
 .mobile-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 99999;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   animation: fadeIn 0.3s ease;
+
+  /* الإصلاح الأساسي - منع التفاعل مع العناصر خلف النافذة */
+  pointer-events: auto;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  /* إضافة طبقة حماية إضافية */
+  isolation: isolate;
 }
 
 .mobile-modal {
@@ -707,6 +812,18 @@
   animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   max-height: 85vh;
   overflow-y: auto;
+  z-index: 100000;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch;
+
+  /* منع النص من التحديد إلا داخل المحتوى */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .modal-handle {
@@ -715,12 +832,27 @@
   background: #d1d5db;
   border-radius: 2px;
   margin: 12px auto 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.modal-handle:hover {
+  background: #9ca3af;
 }
 
 .modal-content {
   padding: 24px;
   direction: rtl;
   text-align: right;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+
+  /* تحسين التمرير */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-image {
@@ -735,6 +867,11 @@
   object-fit: cover;
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.modal-product-image:hover {
+  transform: scale(1.02);
 }
 
 .modal-info {
@@ -817,11 +954,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
 }
 
 .modal-size-circle:hover {
   border-color: #7c3aed;
   background: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.15);
+}
+
+.modal-size-circle:active {
+  transform: translateY(0) scale(0.95);
 }
 
 .modal-size-circle.selected {
@@ -861,12 +1010,22 @@
   gap: 8px;
   transition: all 0.3s ease;
   box-shadow: 0 8px 24px rgba(37, 31, 53, 0.3);
+
+  /* إصلاح التفاعل */
+  pointer-events: auto;
+  touch-action: manipulation;
+  position: relative;
+  z-index: 1;
 }
 
 .modal-add-to-cart-btn:hover:not(.disabled) {
   background: #342a4a;
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(37, 31, 53, 0.4);
+}
+
+.modal-add-to-cart-btn:active:not(.disabled) {
+  transform: translateY(0);
 }
 
 .modal-add-to-cart-btn.added {
@@ -905,7 +1064,7 @@
 /* إخفاء النافذة المنبثقة على الشاشات الكبيرة */
 @media (min-width: 769px) {
   .mobile-modal-overlay {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -939,7 +1098,7 @@
   .adding {
     width: 35px;
     height: 35px;
-    font-size: 25px;
+    font-size: 24px;
   }
 }
 
@@ -967,7 +1126,7 @@
   .adding {
     width: 32px;
     height: 32px;
-    font-size: 25px;
+    font-size: 22px;
   }
 }
 
@@ -1016,4 +1175,74 @@
 
 .clickable-card:hover::after {
   opacity: 1;
+}
+
+/* =================== إصلاحات إضافية للحماية =================== */
+
+/* منع التفاعل مع العناصر في الخلفية عند فتح النافذة */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 99998;
+  pointer-events: auto;
+}
+
+/* إضافة طبقة حماية إضافية للنوافذ */
+.desktop-modal-overlay::before,
+.mobile-modal-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: -1;
+  pointer-events: auto;
+}
+
+/* تحسين الأداء والتفاعل */
+.desktop-modal,
+.mobile-modal {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* إضافة focus trap للنوافذ */
+.desktop-modal:focus,
+.mobile-modal:focus {
+  outline: none;
+}
+
+/* تحسين التمرير في النوافذ */
+.desktop-modal-content,
+.modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.desktop-modal-content::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.desktop-modal-content::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.desktop-modal-content::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.desktop-modal-content::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
 }

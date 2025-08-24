@@ -1,6 +1,6 @@
 'use client';
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IoBagAddOutline } from "react-icons/io5";
 import { useCart } from '../context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,64 @@ export default function DynamicProductCard({ product }) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // إصلاح منع التمرير في الخلفية عند فتح النافذة
+  useEffect(() => {
+    const handleModalOpen = (isOpen) => {
+      if (typeof document !== 'undefined') {
+        if (isOpen) {
+          // حفظ موقع التمرير الحالي
+          const scrollY = window.scrollY;
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${scrollY}px`;
+          document.body.style.left = '0';
+          document.body.style.right = '0';
+          document.body.classList.add('modal-open');
+        } else {
+          // استعادة موقع التمرير
+          const scrollY = document.body.style.top;
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.left = '';
+          document.body.style.right = '';
+          document.body.classList.remove('modal-open');
+          if (scrollY) {
+            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+          }
+        }
+      }
+    };
+
+    const isModalOpen = showMobileModal || showDesktopModal;
+    handleModalOpen(isModalOpen);
+
+    // تنظيف عند إلغاء التحميل
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.classList.remove('modal-open');
+      }
+    };
+  }, [showMobileModal, showDesktopModal]);
+
+  // منع الإغلاق بالضغط على Escape
+  useEffect(() => {
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        handleModalClose();
+      }
+    };
+
+    if (showMobileModal || showDesktopModal) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => {
+        document.removeEventListener('keydown', handleEscapeKey);
+      };
+    }
+  }, [showMobileModal, showDesktopModal]);
 
   if (!product) {
     return <div className="no-product">لا توجد بيانات للمنتج</div>;
@@ -63,14 +121,20 @@ export default function DynamicProductCard({ product }) {
     return false;
   };
 
-  const handleSizeSelect = (size, e) => {
-    e.stopPropagation(); // منع انتشار الحدث للبطاقة الأساسية
+  const handleSizeSelect = useCallback((size, e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     setSelectedSize(size);
     setShowSizeError(false);
-  };
+  }, []);
 
-  const handleAddToCart = (e) => {
-    if (e) e.stopPropagation(); // منع انتشار الحدث للبطاقة الأساسية
+  const handleAddToCart = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
 
     if (hasSizes && !selectedSize) {
       setShowSizeError(true);
@@ -91,56 +155,81 @@ export default function DynamicProductCard({ product }) {
     setTimeout(() => setAdded(false), 3000);
 
     // إغلاق النافذة المنبثقة إذا كانت مفتوحة
-    if (showMobileModal) {
-      setShowMobileModal(false);
+    if (showMobileModal || showDesktopModal) {
+      handleModalClose();
     }
-    if (showDesktopModal) {
-      setShowDesktopModal(false);
-    }
-  };
+  }, [hasSizes, selectedSize, addToCart, product, finalPrice, showMobileModal, showDesktopModal]);
 
-  const handleQuickAdd = (e) => {
-    if (e) e.stopPropagation(); // منع انتشار الحدث للبطاقة الأساسية
+  const handleQuickAdd = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
 
     // التحقق من حجم الشاشة في الوقت الفعلي
     const isMobile = checkIsMobile();
 
-    console.log('handleQuickAdd called', { hasSizes, isMobile, mounted }); // للتطوير
+    console.log('handleQuickAdd called', { hasSizes, isMobile, mounted });
 
     // فتح النافذة المناسبة إذا كانت هناك مقاسات
     if (hasSizes && mounted) {
       if (isMobile) {
-        console.log('Opening mobile modal'); // للتطوير
+        console.log('Opening mobile modal');
         setShowMobileModal(true);
       } else {
-        console.log('Opening desktop modal'); // للتطوير
+        console.log('Opening desktop modal');
         setShowDesktopModal(true);
       }
       return;
     }
 
     // إضافة مباشرة للمنتجات بدون مقاسات
-    console.log('Adding directly to cart'); // للتطوير
+    console.log('Adding directly to cart');
     handleAddToCart(e);
-  };
+  }, [hasSizes, mounted, handleAddToCart]);
 
-  const handleModalClose = () => {
-    console.log('Closing modal'); // للتطوير
+  const handleModalClose = useCallback(() => {
+    console.log('Closing modal');
     setShowMobileModal(false);
     setShowDesktopModal(false);
     setShowSizeError(false);
-  };
+    setSelectedSize(''); // إعادة تعيين المقاس المختار
+  }, []);
 
-  const handleLike = (e) => {
-    e.stopPropagation(); // منع انتشار الحدث للبطاقة الأساسية
+  // إصلاح إغلاق النافذة بالنقر على الخلفية
+  const handleOverlayClick = useCallback((e) => {
+    // التأكد من أن النقر على الخلفية وليس على المحتوى
+    if (e.target === e.currentTarget) {
+      handleModalClose();
+    }
+  }, [handleModalClose]);
+
+  const handleLike = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     setLiked(!liked);
     // يمكن إضافة API call هنا لحفظ المفضلة
-  };
+  }, [liked]);
 
-  const handleCardClick = () => {
+  const handleCardClick = useCallback(() => {
+    // منع الانتقال إذا كانت النافذة مفتوحة
+    if (showMobileModal || showDesktopModal) {
+      return;
+    }
     // الانتقال إلى صفحة المنتج
     router.push(`/products/${product.slug}`);
-  };
+  }, [router, product.slug, showMobileModal, showDesktopModal]);
+
+  const handleModalProductView = useCallback((e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    handleModalClose();
+    router.push(`/products/${product.slug}`);
+  }, [router, product.slug, handleModalClose]);
 
   // عدم عرض المكون قبل التحميل الكامل للتجنب SSR issues
   if (!mounted) {
@@ -174,84 +263,90 @@ export default function DynamicProductCard({ product }) {
   }
 
   return (
-    <div
-      className="dynamic-product-card clickable-card"
-      onClick={handleCardClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleCardClick();
-        }
-      }}
-    >
-      {/* شارة الخصم */}
-      {discount > 0 && (
-        <div className="discount-badge">
-          -{discount}%
-        </div>
-      )}
-
-      {/* حاوية الصورة */}
-      <div className="image-container">
-        {/* الصورة الرئيسية */}
-        <div className="image-wrapper">
-          <Image
-            src={product.images?.[0]?.src || "/placeholder.jpg"}
-            alt={product.name || "Product"}
-            width={400}
-            height={400}
-            className="product-image"
-          />
-        </div>
-      </div>
-
-      {/* محتوى البطاقة */}
-      <div className="card-content">
-        {/* التقييمات والزر المصغر */}
-        <div className="rating-section">
-
-
-          <div className="rating-info">
-            <div className="stars">
-              <span>★</span>
-              <span className="rating-value">{averageRating}   </span>    <span className="review-count">  ({totalReviews})</span>
-            </div>
-
+    <>
+      <div
+        className="dynamic-product-card clickable-card"
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleCardClick();
+          }
+        }}
+      >
+        {/* شارة الخصم */}
+        {discount > 0 && (
+          <div className="discount-badge">
+            -{discount}%
           </div>
-                    <button
-            className="adding"
-            onClick={handleQuickAdd}
-            title="إضافة سريعة للسلة"
-          >
-            <IoBagAddOutline/>
-          </button>
+        )}
+
+        {/* حاوية الصورة */}
+        <div className="image-container">
+          {/* الصورة الرئيسية */}
+          <div className="image-wrapper">
+            <Image
+              src={product.images?.[0]?.src || "/placeholder.jpg"}
+              alt={product.name || "Product"}
+              width={400}
+              height={400}
+              className="product-image"
+            />
+          </div>
         </div>
 
-         {/* اسم المنتج */}
-        <h3 className="product-name">{product.name}</h3>
-
-        {/* الأسعار */}
-        <div className="price-section">
-          <div className="price-container">
-            <div className="current-price">
-              {finalPrice} <span className="currency">ر.س</span>
-            </div>
-            {originalPrice && product.sale_price && (
-              <div className="original-price">
-                {originalPrice} ر.س
+        {/* محتوى البطاقة */}
+        <div className="card-content">
+          {/* التقييمات والزر المصغر */}
+          <div className="rating-section">
+            <div className="rating-info">
+              <div className="stars">
+                <span>★</span>
+                <span className="rating-value">{averageRating}   </span>
+                <span className="review-count">  ({totalReviews})</span>
               </div>
-            )}
+            </div>
+            <button
+              className="adding"
+              onClick={handleQuickAdd}
+              title="إضافة سريعة للسلة"
+            >
+              <IoBagAddOutline/>
+            </button>
+          </div>
+
+          {/* اسم المنتج */}
+          <h3 className="product-name">{product.name}</h3>
+
+          {/* الأسعار */}
+          <div className="price-section">
+            <div className="price-container">
+              <div className="current-price">
+                {finalPrice} <span className="currency">ر.س</span>
+              </div>
+              {originalPrice && product.sale_price && (
+                <div className="original-price">
+                  {originalPrice} ر.س
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* النافذة المنبثقة للموبايل */}
       {showMobileModal && (
-        <div className="mobile-modal-overlay" onClick={handleModalClose}>
-          <div className="mobile-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="mobile-modal-overlay" onClick={handleOverlayClick}>
+          <div
+            className="mobile-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mobile-modal-title"
+          >
             {/* مقبض الإغلاق */}
-            <div className="modal-handle"></div>
+            <div className="modal-handle" onClick={handleModalClose}></div>
 
             {/* محتوى النافذة */}
             <div className="modal-content">
@@ -268,7 +363,7 @@ export default function DynamicProductCard({ product }) {
 
               {/* معلومات المنتج */}
               <div className="modal-info">
-                <h3 className="modal-product-name">{product.name}</h3>
+                <h3 id="mobile-modal-title" className="modal-product-name">{product.name}</h3>
 
                 {/* السعر */}
                 <div className="modal-price">
@@ -295,13 +390,14 @@ export default function DynamicProductCard({ product }) {
                           key={size}
                           onClick={(e) => handleSizeSelect(size, e)}
                           className={`modal-size-circle ${selectedSize === size ? 'selected' : ''}`}
+                          aria-pressed={selectedSize === size}
                         >
                           {size}
                         </button>
                       ))}
                     </div>
                     {showSizeError && (
-                      <p className="modal-size-error">⚠️ يرجى اختيار المقاس</p>
+                      <p className="modal-size-error" role="alert">⚠️ يرجى اختيار المقاس</p>
                     )}
                   </div>
                 )}
@@ -312,6 +408,7 @@ export default function DynamicProductCard({ product }) {
                     className={`modal-add-to-cart-btn ${added ? 'added' : ''} ${(hasSizes && !selectedSize) ? 'disabled' : ''}`}
                     onClick={handleAddToCart}
                     disabled={hasSizes && !selectedSize}
+                    aria-describedby={showSizeError ? 'modal-size-error' : undefined}
                   >
                     <IoBagAddOutline className="modal-cart-icon" />
                     <span>{added ? 'تمت الإضافة ✨' : 'أضف إلى السلة'}</span>
@@ -325,10 +422,20 @@ export default function DynamicProductCard({ product }) {
 
       {/* النافذة الجانبية للديسكتوب */}
       {showDesktopModal && (
-        <div className="desktop-modal-overlay" onClick={handleModalClose}>
-          <div className="desktop-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="desktop-modal-overlay" onClick={handleOverlayClick}>
+          <div
+            className="desktop-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="desktop-modal-title"
+          >
             {/* زر الإغلاق */}
-            <button className="desktop-modal-close" onClick={handleModalClose}>
+            <button
+              className="desktop-modal-close"
+              onClick={handleModalClose}
+              aria-label="إغلاق النافذة"
+            >
               ×
             </button>
 
@@ -347,7 +454,7 @@ export default function DynamicProductCard({ product }) {
 
               {/* معلومات المنتج */}
               <div className="desktop-modal-info">
-                <h3 className="desktop-modal-product-name">{product.name}</h3>
+                <h3 id="desktop-modal-title" className="desktop-modal-product-name">{product.name}</h3>
 
                 {/* التقييمات */}
                 <div className="desktop-modal-rating">
@@ -383,13 +490,14 @@ export default function DynamicProductCard({ product }) {
                           key={size}
                           onClick={(e) => handleSizeSelect(size, e)}
                           className={`desktop-modal-size-circle ${selectedSize === size ? 'selected' : ''}`}
+                          aria-pressed={selectedSize === size}
                         >
                           {size}
                         </button>
                       ))}
                     </div>
                     {showSizeError && (
-                      <p className="desktop-modal-size-error">⚠️ يرجى اختيار المقاس</p>
+                      <p className="desktop-modal-size-error" role="alert">⚠️ يرجى اختيار المقاس</p>
                     )}
                   </div>
                 )}
@@ -400,6 +508,7 @@ export default function DynamicProductCard({ product }) {
                     className={`desktop-modal-add-to-cart-btn ${added ? 'added' : ''} ${(hasSizes && !selectedSize) ? 'disabled' : ''}`}
                     onClick={handleAddToCart}
                     disabled={hasSizes && !selectedSize}
+                    aria-describedby={showSizeError ? 'desktop-modal-size-error' : undefined}
                   >
                     <IoBagAddOutline className="desktop-modal-cart-icon" />
                     <span>{added ? 'تمت الإضافة ✨' : 'أضف إلى السلة'}</span>
@@ -407,7 +516,7 @@ export default function DynamicProductCard({ product }) {
 
                   <button
                     className="desktop-modal-view-product"
-                    onClick={handleCardClick}
+                    onClick={handleModalProductView}
                   >
                     عرض تفاصيل المنتج
                   </button>
@@ -417,7 +526,6 @@ export default function DynamicProductCard({ product }) {
           </div>
         </div>
       )}
-
-    </div>
+    </>
   );
 }
