@@ -10,7 +10,7 @@
   transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
   text-align: right;
   direction: rtl;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Tajawal", system-ui, sans-serif;
 }
 
 /* شارة الخصم */
