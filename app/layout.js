@@ -1,12 +1,15 @@
+//layout.js
 
 import { CartProvider } from "./context/CartContext";
-import { Geist, Geist_Mono, Imprima } from "next/font/google";
+import { Geist, Geist_Mono, Imprima ,Tajawal } from "next/font/google";
 import Header from "./components/header/page";
 import "./globals.css";
 import Footer from "./components/footer/page";
 import Navbar from "./components/navBar/page";
 import { cookies } from 'next/headers'
 import { verifyJwt } from "@/lib/jwt";
+
+
 
 
 
@@ -22,6 +25,13 @@ export async function GET() {
 
   return Response.json({ user })
 }
+
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  weight: ["400", "500", "700", "800"], // اختَر الأوزان اللي تحتاجها فقط
+  variable: "--font-tajawal",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
