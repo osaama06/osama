@@ -813,6 +813,8 @@ body.modal-open {
   max-height: 85vh;
   overflow-y: auto;
   z-index: 100000;
+   padding-bottom: 148px;
+  
 
   /* إصلاح التفاعل */
   pointer-events: auto;
